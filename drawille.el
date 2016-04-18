@@ -65,7 +65,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'lisp-float-type)
 
 (defconst drawille-braille-unicode-offset #x2800
   "Offset to reach the first braille char in unicode encoding.")
@@ -90,7 +89,7 @@
   (cl-loop with char-offset = (- char drawille-braille-unicode-offset)
            with result = (make-vector 8 nil)
            for dot-index across drawille-braille-reverse-table
-           for dot-offset = (aref drawille-braille-table dot-index)
+           with dot-offset = (aref drawille-braille-table dot-index)
            do
            (aset result dot-index
                  (if (< char-offset dot-offset) 0
@@ -156,8 +155,9 @@ can be displayed."
 Coordinates starts at 0 at the bottom left, it can accept floats,
 but not negative cordinates.  Although, they can overflow at the
 rigt and at the top of the current matrix."
-  (let* ((drawille (if (not drawille) (char-to-string #x2800)
-                   drawille))
+  (let* ((drawille (if (not drawille)
+                       (char-to-string #x2800)
+                     drawille))
          (n-x (round x)) (n-y (round y))
          (grid (drawille-grid drawille n-y n-x))
          (inverted-y (- (* 4 (length grid)) n-y 1)) ;Row to ordinate
